@@ -1,0 +1,14 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="42" width="42" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_4">
+   <polyline id="svg_2" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke="#ffffff" points="35.001007080078125,2.5 35.001007080078125,11.5 26.001007080078125,11.499000549316406 " fill="none"/>
+   <path id="svg_3" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke="#ffffff" fill="none" d="m37,20.5c0,9.389999 -7.610001,17 -17,17s-17,-7.610001 -17,-17s7.610001,-17 17,-17c5.011002,0 9.515991,2.167 12.626999,5.616c0.617996,0.686001 1.181992,1.423001 1.682999,2.203"/>
+  </g>
+ </g>
+</svg>
