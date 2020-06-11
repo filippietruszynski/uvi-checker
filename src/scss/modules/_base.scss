@@ -1,0 +1,14 @@
+// ### media queries ###
+
+@mixin viewport-4{
+  @media (min-width: 480px) { @content; }}
+
+@mixin viewport-5{
+  @media (min-width: 568px) { @content; }}
+
+// ### variables ###
+
+$font-color: rgb(255, 255, 255);
+$bg-color: rgb(0, 0, 0);
+$font-family: "Lato", sans-serif;
+$shadow-color: rgba(255, 255, 255, 0.15);

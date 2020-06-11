@@ -1,0 +1,31 @@
+.app-uvi {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uvi-circle {
+  width: 250px;
+  height: 250px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.uvi-title {
+  font-size: 1.3rem;
+}
+
+.uvi-value {
+  font-size: 6rem;
+}
+
+.uvi-level {
+  font-size: 1.3rem;
+}

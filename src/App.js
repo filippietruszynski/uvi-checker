@@ -2,75 +2,147 @@ import React, { Component } from 'react';
 import Weather from './components/Weather';
 import UVI from './components/UVI';
 import Footer from './components/Footer';
-import './App.css';
+import './App.scss';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
       isLoading: false,
-      openUV: {},
-      openWeather: {}
+      error: false,
+      errorMessage: '',
+      latitude: undefined,
+      longitude: undefined,
+      temperature: undefined,
+      weatherIcon: undefined,
+      cityName: undefined,
+      countryCode: undefined,
+      uvi: undefined,
+      uviLevel: '',
+      bgColor: ''
     };
+
+    this.reloadPage = this.reloadPage.bind(this);
   }
 
   componentDidMount() {
     this.setState({ isLoading: true });
+    this.getCoordinates();
+  }
+
+  componentDidUpdate() {
+    console.log(this.state);
+  }
+
+  getCoordinates() {
+    const success = (position) => {
+      this.setState({ isLoading: true });
+
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      this.setState({
+        latitude: latitude,
+        longitude: longitude
+      })
+
+      this.getData(latitude, longitude);
+    }
+
+    const error = (err) => {
+      this.setState({ error: true, errorMessage: err.message });
+      alert('Unable to retrieve location.');
+    }
 
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(position => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        this.getUVI(latitude, longitude);
-        this.getWeather(latitude, longitude);
-      })
+      this.setState({ isLoading: true });
+      navigator.geolocation.getCurrentPosition(success, error);
     } else {
-      alert(`Geolocation not supported.`)
+      alert('Your browser does not support location tracking, or permission is denied.');
     }
   }
 
-  getUVI(latitude, longitude) {
+  getData(latitude, longitude) {
+    const openWeatherKey = `6add13a2c6e6b015ba20350d31369f56`;
+    const openWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherKey}&units=metric`;
+
     const openUVKey = `8abf53f19a2e2ef1d14f967f20d313fe`;
     const openUVUrl = `https://api.openuv.io/api/v1/uv?lat=${latitude}&lng=${longitude}`;
 
-    fetch(openUVUrl, {
-      headers: {
-        'x-access-token': openUVKey
-      }
-    })
-      .then(response => response.json())
+    Promise.all([fetch(openWeatherUrl), fetch(openUVUrl, { headers: { 'x-access-token': openUVKey } })])
+      .then(responses => Promise.all(responses.map(response => response.json())))
       .then(data => {
         this.setState({
-          isLoading: false,
-          openUV: data.result
+          temperature: Math.floor(data[0].main.temp),
+          weatherIcon: data[0].weather[0].icon.substring(0, data[0].weather[0].icon.length - 1),
+          cityName: data[0].name,
+          countryCode: data[0].sys.country,
+          uvi: Math.round((data[1].result.uv + Number.EPSILON) * 100) / 100,
+          isLoading: false
         })
+
+        this.getUVLevel(data[1].result.uv);
+      })
+      .catch(error => {
+        this.setState({
+          error: true,
+          errorMessage: error.message
+        });
+        console.warn(`ERROR(${error.code}): ${error.message}`);
       })
   }
 
-  getWeather(latitude, longitude) {
-    const openWeatherKey = `d3b81061825386ec550afeccafc9425d`;
-    const openWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherKey}`;
+  getUVLevel(uvi) {
+    let uviLevel = {
+      name: '',
+      color: ''
+    };
 
-    fetch(openWeatherUrl)
-      .then(response => response.json())
-      .then(data => {
-        this.setState({
-          isLoading: false,
-          openWeather: data
-        })
-      })
+    if (0 <= uvi && uvi < 3) {
+      uviLevel.name = 'Low';
+      uviLevel.color = '#558B2F';
+    } else if (3 <= uvi && uvi < 6) {
+      uviLevel.name = 'Moderate';
+      uviLevel.color = '#F9A825';
+    } else if (6 <= uvi && uvi < 8) {
+      uviLevel.name = 'High';
+      uviLevel.color = '#EF6C00';
+    } else if (8 <= uvi && uvi < 11) {
+      uviLevel.name = 'Very High';
+      uviLevel.color = '#B71C1C';
+    } else if (11 <= uvi) {
+      uviLevel.name = 'Extreme';
+      uviLevel.color = '#6A1B9A';
+    }
+
+    this.setState({
+      uviLevel: uviLevel.name,
+      bgColor: uviLevel.color
+    });
+
+    this.setBgColor(uviLevel.color);
+  }
+
+  setBgColor(color) {
+    document.body.style.backgroundColor = color;
+  }
+
+  reloadPage() {
+    window.location.reload(false);
   }
 
   render() {
-
     return (
-      <div>
-        <Weather />
-        <UVI />
-        <Footer />
+      <div className='app-wrapper'>
+        <Weather temperature={this.state.temperature}
+          weatherIcon={this.state.weatherIcon}
+          countryCode={this.state.countryCode}
+          cityName={this.state.cityName} />
+        <UVI uvi={this.state.uvi}
+          uviLevel={this.state.uviLevel} />
+        <Footer reloadPage={this.reloadPage} />
       </div>
-    )
+    );
   }
 }
 

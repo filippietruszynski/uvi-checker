@@ -1,0 +1,27 @@
+.app-weather {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.weather-icon {
+  width: 7rem;
+  height: 7rem;
+}
+
+.weather-values {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.weather-temp {
+  font-size: 3rem;
+}
+
+.weather-local {
+  font-size: 1.2rem;
+
+}
