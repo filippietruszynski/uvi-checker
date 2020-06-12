@@ -80,6 +80,7 @@ class App extends Component {
           uvi: Math.round((data[1].result.uv + Number.EPSILON) * 100) / 100,
           isLoading: false
         })
+        console.log(data[0].weather[0].icon.substring(0, data[0].weather[0].icon.length - 1))
 
         this.getUVLevel(data[1].result.uv);
       })
