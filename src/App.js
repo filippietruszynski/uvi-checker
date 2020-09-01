@@ -4,6 +4,9 @@ import UVI from './components/UVI';
 import Footer from './components/Footer';
 import './App.scss';
 
+const OPEN_WEATHER_API_KEY = process.env.REACT_APP_OPEN_WEATHER_API_KEY;
+const OPEN_UV_API_KEY = process.env.REACT_APP_OPEN_UV_API_KEY;
+
 class App extends Component {
   constructor() {
     super();
@@ -63,13 +66,11 @@ class App extends Component {
   }
 
   getData(latitude, longitude) {
-    const openWeatherKey = `6add13a2c6e6b015ba20350d31369f56`;
-    const openWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherKey}&units=metric`;
+    const openWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${OPEN_WEATHER_API_KEY}&units=metric`;
 
-    const openUVKey = `8abf53f19a2e2ef1d14f967f20d313fe`;
     const openUVUrl = `https://api.openuv.io/api/v1/uv?lat=${latitude}&lng=${longitude}`;
 
-    Promise.all([fetch(openWeatherUrl), fetch(openUVUrl, { headers: { 'x-access-token': openUVKey } })])
+    Promise.all([fetch(openWeatherUrl), fetch(openUVUrl, { headers: { 'x-access-token': OPEN_UV_API_KEY } })])
       .then(responses => Promise.all(responses.map(response => response.json())))
       .then(data => {
         this.setState({
